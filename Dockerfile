@@ -1,14 +1,11 @@
 # creates a layer from the base Docker image.
-FROM python:3.8.8-slim-buster
+FROM python:3.9.2-slim-buster
 
 # set working directory
 WORKDIR /app
 
 # https://shouldiblamecaching.com/
 ENV PIP_NO_CACHE_DIR=1
-
-# we don't have an interactive xTerm
-ENV DEBIAN_FRONTEND=noninteractive
 
 # http://bugs.python.org/issue19846
 # https://github.com/SpEcHiDe/PublicLeech/pull/97
@@ -29,6 +26,8 @@ RUN apt update \
 	gnupg2 \
 	software-properties-common \
 	wget \
+	# install gcc [ PEP 517 ]
+	build-essential gcc \
 	&& apt-add-repository non-free
 
 # add required files to sources.list

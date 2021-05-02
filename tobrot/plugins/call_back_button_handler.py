@@ -3,6 +3,7 @@
 # (c) Shrimadhav U K
 
 from pyrogram.types import CallbackQuery
+from tobrot.amocmadin import Loilacaztion
 from tobrot.helper_funcs.youtube_dl_button import youtube_dl_call_back
 from tobrot.helper_funcs.icntaosrtsba import leech_btn_k, ytdl_btn_k
 from tobrot import LOGGER
@@ -10,6 +11,13 @@ from tobrot import LOGGER
 
 async def button(bot, update: CallbackQuery):
     LOGGER.info(update)
+    if not update.message.reply_to_message:
+        await update.answer(
+            text=Loilacaztion.TGD_YTLD_STOOPID_DRUSER,
+            show_alert=True
+        )
+        return
+
     if update.from_user.id != update.message.reply_to_message.from_user.id:
         return
 

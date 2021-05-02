@@ -49,3 +49,7 @@ class Loilacaztion:
     TOR_CANCEL_FAILED = get_config(
         "STRINGS_TOR_CANCEL_FAILED", "<i>FAILED</i>\n\n#error"
     )
+    TGD_YTLD_STOOPID_DRUSER = get_config(
+        "TGD_YTLD_STOOPID_DRUSER",
+        "😡😡 i can't process theis expired request 😏"
+    )
