@@ -7,6 +7,7 @@ import os
 import time
 from shutil import copyfile
 
+import magic
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 from PIL import Image
@@ -126,7 +127,8 @@ async def upload_single_file(
             message_for_progress_display = await message.reply_text(
                 "starting upload of {}".format(os.path.basename(local_file_name))
             )
-        if local_file_name.upper().endswith(("MKV", "MP4", "WEBM")):
+        file_type = magic.from_file(local_file_name, mime=True)
+        if file_type.startswith("video/"):
             metadata = extractMetadata(createParser(local_file_name))
             duration = 0
             if metadata.has("duration"):
@@ -201,7 +203,7 @@ async def upload_single_file(
                         start_time,
                     ),
                 )
-        elif local_file_name.upper().endswith(("MP3", "M4A", "M4B", "FLAC", "WAV")):
+        elif file_type.startswith("audio/"):
             metadata = extractMetadata(createParser(local_file_name))
             duration = 0
             title = ""
