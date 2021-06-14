@@ -29,19 +29,12 @@ async def get_markup(message: Message):
             config = configparser.ConfigParser()
             config.read(r_clone_conf_file)
             remote_names = config.sections()
-            it_r = 0
-            for remote_name in remote_names:
+            for it_r, remote_name in enumerate(remote_names):
                 ikeyboard.row(
                     InlineKeyboardButton(
                         f"RClone LEECH {remote_name}",
                         callback_data=f"leech_rc_{it_r}".encode("UTF-8"),
                     )
                 )
-                # ikeyboard.append(InlineKeyboardButton(
-                #     f"RClone YTDL {remote_name}",
-                #     callback_data=(f"ytdl_rc_{it_r}").encode("UTF-8")
-                # ))
-                it_r = it_r + 1
-
     reply_text = "please select the required option"
     return reply_text, ikeyboard

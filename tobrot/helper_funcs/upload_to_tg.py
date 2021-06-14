@@ -36,7 +36,7 @@ async def upload_to_tg(
     LOGGER.info(local_file_name)
     base_file_name = os.path.basename(local_file_name)
     caption_str = custom_caption
-    if not (caption_str and edit_media):
+    if not caption_str or not edit_media:
         LOGGER.info("fall-back to default file_name")
         caption_str = "<code>"
         caption_str += base_file_name
@@ -69,42 +69,41 @@ async def upload_to_tg(
                 edit_media,
                 caption_str,
             )
+    elif os.path.getsize(local_file_name) > Config.MAX_FILE_SIZE:
+        LOGGER.info("TODO")
+        d_f_s = humanbytes(os.path.getsize(local_file_name))
+        i_m_s_g = await message.reply_text(
+            "Telegram does not support uploading this file.\n"
+            f"Detected File Size: {d_f_s} 😡\n"
+            "\n🤖 trying to split the files 🌝🌝🌚"
+        )
+        splitted_dir = await split_large_files(local_file_name)
+        totlaa_sleif = os.listdir(splitted_dir)
+        totlaa_sleif.sort()
+        number_of_files = len(totlaa_sleif)
+        LOGGER.info(totlaa_sleif)
+        ba_se_file_name = os.path.basename(local_file_name)
+        await i_m_s_g.edit_text(
+            f"Detected File Size: {d_f_s} 😡\n"
+            f"<code>{ba_se_file_name}</code> splitted into {number_of_files} files.\n"
+            "trying to upload to Telegram, now ..."
+        )
+        for le_file in totlaa_sleif:
+            # recursion: will this FAIL somewhere?
+            await upload_to_tg(
+                message,
+                os.path.join(splitted_dir, le_file),
+                from_user,
+                dict_contatining_uploaded_files,
+            )
     else:
-        if os.path.getsize(local_file_name) > Config.MAX_FILE_SIZE:
-            LOGGER.info("TODO")
-            d_f_s = humanbytes(os.path.getsize(local_file_name))
-            i_m_s_g = await message.reply_text(
-                "Telegram does not support uploading this file.\n"
-                f"Detected File Size: {d_f_s} 😡\n"
-                "\n🤖 trying to split the files 🌝🌝🌚"
-            )
-            splitted_dir = await split_large_files(local_file_name)
-            totlaa_sleif = os.listdir(splitted_dir)
-            totlaa_sleif.sort()
-            number_of_files = len(totlaa_sleif)
-            LOGGER.info(totlaa_sleif)
-            ba_se_file_name = os.path.basename(local_file_name)
-            await i_m_s_g.edit_text(
-                f"Detected File Size: {d_f_s} 😡\n"
-                f"<code>{ba_se_file_name}</code> splitted into {number_of_files} files.\n"
-                "trying to upload to Telegram, now ..."
-            )
-            for le_file in totlaa_sleif:
-                # recursion: will this FAIL somewhere?
-                await upload_to_tg(
-                    message,
-                    os.path.join(splitted_dir, le_file),
-                    from_user,
-                    dict_contatining_uploaded_files,
-                )
-        else:
-            sent_message = await upload_single_file(
-                message, local_file_name, caption_str, from_user, edit_media
-            )
-            if sent_message is not None:
-                dict_contatining_uploaded_files[
-                    os.path.basename(local_file_name)
-                ] = sent_message.message_id
+        sent_message = await upload_single_file(
+            message, local_file_name, caption_str, from_user, edit_media
+        )
+        if sent_message is not None:
+            dict_contatining_uploaded_files[
+                os.path.basename(local_file_name)
+            ] = sent_message.message_id
     # await message.delete()
     return dict_contatining_uploaded_files
 
