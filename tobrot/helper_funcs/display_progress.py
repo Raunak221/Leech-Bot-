@@ -11,7 +11,7 @@ from pyrogram.errors import FloodWait
 from tobrot import Config
 
 
-async def progress_for_pyrogram(current, total, status_text, message, start):
+async def progress_for_pyrogram(current, total, filename, message, start):
     now = time.time()
     diff = now - start
     if round(diff % 10.00) == 0 or current == total:
@@ -34,6 +34,7 @@ async def progress_for_pyrogram(current, total, status_text, message, start):
         )
 
         progress_text = (
+            f"Filename: <i>{filename}</i>\n"
             f"{progress_block}"
             f"Uploading {round(percentage, 2)}% of "
             f"{humanbytes(total)} @ {humanbytes(speed)}/s, "
@@ -41,9 +42,9 @@ async def progress_for_pyrogram(current, total, status_text, message, start):
         )
         try:
             if not message.photo:
-                await message.edit_text(text=f"{status_text}\n {progress_text}")
+                await message.edit_text(text=progress_text)
             else:
-                await message.edit_caption(caption=f"{status_text}\n {progress_text}")
+                await message.edit_caption(caption=progress_text)
         except FloodWait as e:
             await asyncio.sleep(e.x)
 

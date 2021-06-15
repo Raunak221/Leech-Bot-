@@ -110,7 +110,7 @@ async def upload_to_tg(
 
 
 async def upload_single_file(
-    message, local_file_name, caption_str, from_user, edit_media
+    message, local_file_path, caption_str, from_user, edit_media
 ):
     await asyncio.sleep(Config.EDIT_SLEEP_TIME_OUT)
     sent_message = None
@@ -123,13 +123,14 @@ async def upload_single_file(
     #
     try:
         message_for_progress_display = message
+        file_name = os.path.basename(local_file_path)
         if not edit_media:
             message_for_progress_display = await message.reply_text(
-                "starting upload of {}".format(os.path.basename(local_file_name))
+                f"starting upload of {file_name}"
             )
-        file_type = magic.from_file(local_file_name, mime=True)
+        file_type = magic.from_file(local_file_path, mime=True)
         if file_type.startswith("video/"):
-            metadata = extractMetadata(createParser(local_file_name))
+            metadata = extractMetadata(createParser(local_file_path))
             duration = 0
             if metadata.has("duration"):
                 duration = metadata.get("duration").seconds
@@ -140,12 +141,12 @@ async def upload_single_file(
             if os.path.exists(thumbnail_location):
                 thumb_image_path = await copy_file(
                     thumbnail_location,
-                    os.path.dirname(os.path.abspath(local_file_name)),
+                    os.path.dirname(os.path.abspath(local_file_path)),
                 )
             else:
                 thumb_image_path = await take_screen_shot(
-                    local_file_name,
-                    os.path.dirname(os.path.abspath(local_file_name)),
+                    local_file_path,
+                    os.path.dirname(os.path.abspath(local_file_path)),
                     (duration / 2),
                 )
                 # get the correct width, height, and duration for videos greater than 10MB
@@ -172,7 +173,7 @@ async def upload_single_file(
             if edit_media and message.photo:
                 sent_message = await message.edit_media(
                     media=InputMediaVideo(
-                        media=local_file_name,
+                        media=local_file_path,
                         thumb=thumb,
                         caption=caption_str,
                         parse_mode="html",
@@ -185,7 +186,7 @@ async def upload_single_file(
                 )
             else:
                 sent_message = await message.reply_video(
-                    video=local_file_name,
+                    video=local_file_path,
                     # quote=True,
                     caption=caption_str,
                     parse_mode="html",
@@ -198,13 +199,13 @@ async def upload_single_file(
                     # reply_to_message_id=message.reply_to_message.message_id,
                     progress=progress_for_pyrogram,
                     progress_args=(
-                        "trying to upload",
+                        file_name,
                         message_for_progress_display,
                         start_time,
                     ),
                 )
         elif file_type.startswith("audio/"):
-            metadata = extractMetadata(createParser(local_file_name))
+            metadata = extractMetadata(createParser(local_file_path))
             duration = 0
             title = ""
             artist = ""
@@ -218,7 +219,7 @@ async def upload_single_file(
             if os.path.isfile(thumbnail_location):
                 thumb_image_path = await copy_file(
                     thumbnail_location,
-                    os.path.dirname(os.path.abspath(local_file_name)),
+                    os.path.dirname(os.path.abspath(local_file_path)),
                 )
             thumb = None
             if thumb_image_path is not None and os.path.isfile(thumb_image_path):
@@ -227,7 +228,7 @@ async def upload_single_file(
             if edit_media and message.photo:
                 sent_message = await message.edit_media(
                     media=InputMediaAudio(
-                        media=local_file_name,
+                        media=local_file_path,
                         thumb=thumb,
                         caption=caption_str,
                         parse_mode="html",
@@ -239,7 +240,7 @@ async def upload_single_file(
                 )
             else:
                 sent_message = await message.reply_audio(
-                    audio=local_file_name,
+                    audio=local_file_path,
                     # quote=True,
                     caption=caption_str,
                     parse_mode="html",
@@ -251,7 +252,7 @@ async def upload_single_file(
                     # reply_to_message_id=message.reply_to_message.message_id,
                     progress=progress_for_pyrogram,
                     progress_args=(
-                        "trying to upload",
+                        file_name,
                         message_for_progress_display,
                         start_time,
                     ),
@@ -261,7 +262,7 @@ async def upload_single_file(
             if os.path.isfile(thumbnail_location):
                 thumb_image_path = await copy_file(
                     thumbnail_location,
-                    os.path.dirname(os.path.abspath(local_file_name)),
+                    os.path.dirname(os.path.abspath(local_file_path)),
                 )
             # if a file, don't upload "thumb"
             # this "diff" is a major derp -_- 😔😭😭
@@ -273,7 +274,7 @@ async def upload_single_file(
             if edit_media and message.photo:
                 sent_message = await message.edit_media(
                     media=InputMediaDocument(
-                        media=local_file_name,
+                        media=local_file_path,
                         thumb=thumb,
                         caption=caption_str,
                         parse_mode="html",
@@ -282,7 +283,7 @@ async def upload_single_file(
                 )
             else:
                 sent_message = await message.reply_document(
-                    document=local_file_name,
+                    document=local_file_path,
                     # quote=True,
                     thumb=thumb,
                     caption=caption_str,
@@ -291,7 +292,7 @@ async def upload_single_file(
                     # reply_to_message_id=message.reply_to_message.message_id,
                     progress=progress_for_pyrogram,
                     progress_args=(
-                        "trying to upload",
+                        file_name,
                         message_for_progress_display,
                         start_time,
                     ),
@@ -303,5 +304,5 @@ async def upload_single_file(
     else:
         if message.message_id != message_for_progress_display.message_id:
             await message_for_progress_display.delete()
-    os.remove(local_file_name)
+    os.remove(local_file_path)
     return sent_message
