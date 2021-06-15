@@ -1,9 +1,10 @@
 """ThumbNail utilities, © @AnyDLBot"""
 
 import os
+
 from PIL import Image
-from tobrot.config import Config
-from tobrot.amocmadin import Loilacaztion
+
+from tobrot import Config, String
 
 
 async def save_thumb_nail(_, message):
@@ -11,7 +12,7 @@ async def save_thumb_nail(_, message):
     thumb_image_path = os.path.join(
         thumbnail_location, str(message.from_user.id) + ".jpg"
     )
-    ismgs = await message.reply_text(Loilacaztion.PROCESSING)
+    ismgs = await message.reply_text(String.PROCESSING)
     if message.reply_to_message is not None:
         if not os.path.isdir(thumbnail_location):
             os.makedirs(thumbnail_location)
@@ -25,9 +26,9 @@ async def save_thumb_nail(_, message):
         img = Image.open(downloaded_file_name)
         img.save(thumb_image_path, "JPEG")
         # https://pillow.readthedocs.io/en/3.1.x/reference/Image.html#create-thumbnails
-        await ismgs.edit(Loilacaztion.SAVED_THUMBNAIL)
+        await ismgs.edit(String.SAVED_THUMBNAIL)
     else:
-        await ismgs.edit(Loilacaztion.HELP_SAVE_THUMBNAIL)
+        await ismgs.edit(String.HELP_SAVE_THUMBNAIL)
 
 
 async def clear_thumb_nail(_, message):
@@ -35,7 +36,7 @@ async def clear_thumb_nail(_, message):
     thumb_image_path = os.path.join(
         thumbnail_location, str(message.from_user.id) + ".jpg"
     )
-    ismgs = await message.reply_text(Loilacaztion.PROCESSING)
+    ismgs = await message.reply_text(String.PROCESSING)
     if os.path.exists(thumb_image_path):
         os.remove(thumb_image_path)
-    await ismgs.edit(Loilacaztion.CLEARED_THUMBNAIL)
+    await ismgs.edit(String.CLEARED_THUMBNAIL)

@@ -8,7 +8,7 @@ import time
 
 from pyrogram.errors import FloodWait
 
-from tobrot.config import Config
+from tobrot import Config
 
 
 async def progress_for_pyrogram(current, total, status_text, message, start):
@@ -25,8 +25,7 @@ async def progress_for_pyrogram(current, total, status_text, message, start):
 
         progress_block = "[{}{}]\n".format(
             "".join(
-                Config.FINISHED_PROGRESS_STR
-                for _ in range(math.floor(percentage / 5))
+                Config.FINISHED_PROGRESS_STR for _ in range(math.floor(percentage / 5))
             ),
             "".join(
                 Config.UN_FINISHED_PROGRESS_STR

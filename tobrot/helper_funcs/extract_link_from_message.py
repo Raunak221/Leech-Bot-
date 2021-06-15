@@ -3,11 +3,9 @@
 # (c) Shrimadhav U K
 
 import aiohttp
-
 from pyrogram.types import MessageEntity
 
-from tobrot import LOGGER
-from tobrot.config import Config
+from tobrot import LOGGER, Config
 
 
 def extract_url_from_entity(entities: MessageEntity, text: str):

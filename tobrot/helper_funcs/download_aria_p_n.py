@@ -5,12 +5,13 @@
 import asyncio
 import configparser
 import os
-from pyrogram.errors import MessageNotModified, FloodWait
-from tobrot import LOGGER
-from tobrot.helper_funcs.upload_to_tg import upload_to_tg
+
+from pyrogram.errors import FloodWait, MessageNotModified
+
+from tobrot import LOGGER, Config
 from tobrot.helper_funcs.create_compressed_archive import create_archive
-from tobrot.config import Config
-from tobrot.helper_funcs.r_clone import get_r_clone_config, copy_via_rclone
+from tobrot.helper_funcs.r_clone import copy_via_rclone, get_r_clone_config
+from tobrot.helper_funcs.upload_to_tg import upload_to_tg
 
 
 def add_magnet(aria_instance, magnetic_link, c_file_name):
@@ -106,7 +107,7 @@ async def fake_etairporpa_call(
     to_upload_file = file.name
     # -_-
     r_clone_conf_file = await get_r_clone_config(
-        Config.R_CLONE_CONF_URI, sent_message_to_update_tg_p._client
+        Config.RCLONE_CONF_URI, sent_message_to_update_tg_p._client
     )
     if r_clone_conf_file is not None:  # how? even :\
         config = configparser.ConfigParser()
@@ -119,7 +120,7 @@ async def fake_etairporpa_call(
         remote_file_link = await copy_via_rclone(
             to_upload_file,
             required_remote,
-            Config.R_CLONE_DEST,  # rclone destination folder
+            Config.RCLONE_DEST,  # rclone destination folder
             r_clone_conf_file,
         )
         await sent_message_to_update_tg_p.reply_text(

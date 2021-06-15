@@ -5,9 +5,10 @@
 import os
 import shutil
 from datetime import datetime
+
 import yt_dlp
-from tobrot import LOGGER
-from tobrot.config import Config
+
+from tobrot import LOGGER, Config
 from tobrot.helper_funcs.extract_link_from_message import extract_link
 from tobrot.helper_funcs.upload_to_tg import upload_to_tg
 from tobrot.helper_funcs.youtube_dl_extractor import yt_extract_info
@@ -63,7 +64,7 @@ async def youtube_dl_call_back(bot, update):
         "nooverwrites": True,
         "continuedl": True,
         "noplaylist": True,
-        "max_filesize": Config.TG_MAX_FILE_SIZE,
+        "max_filesize": Config.MAX_FILE_SIZE,
     }
     if yt_dl_user_name and yt_dl_pass_word:
         ytdl_opts.update(

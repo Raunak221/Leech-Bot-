@@ -6,12 +6,12 @@ import asyncio
 import functools
 from concurrent.futures import ThreadPoolExecutor
 
-from tobrot.helper_funcs.display_progress import humanbytes
 import yt_dlp
 from pykeyboard import InlineKeyboard
 from pyrogram.types import InlineKeyboardButton
 
-from tobrot.config import Config
+from tobrot import Config
+from tobrot.helper_funcs.display_progress import humanbytes
 
 
 # https://stackoverflow.com/a/64506715
@@ -66,7 +66,7 @@ async def extract_youtube_dl_formats(
         # LOGGER.info(thumb_image)
         # YouTube acts weirdly,
         # and not in the same way as Telegram
-        thumbnail = thumb_image or Config.DEF_THUMB_NAIL_VID_S
+        thumbnail = thumb_image or Config.DEFAULT_THUMBNAIL
 
         extractor_key = info.get("extractor_key", "Generic")
         duration = info.get("duration", None)
@@ -142,7 +142,7 @@ async def extract_youtube_dl_formats(
                     )
         else:
             format_id = info.get("format_id", None)
-            format_ext = info.get("ext", None)
+            # format_ext = info.get("ext", None)
             ikeyboard.row(
                 InlineKeyboardButton(
                     "SVideo", callback_data=f"video|{extractor_key}|{format_id}|DL"

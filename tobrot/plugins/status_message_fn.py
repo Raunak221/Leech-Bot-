@@ -9,15 +9,13 @@ import shutil
 import sys
 import time
 import traceback
-from tobrot import aria2, BOT_START_TIME, LOGGER
-from tobrot.config import Config
+
+from tobrot import BOT_START_TIME, LOGGER, Command, Config, String, aria2
+from tobrot.helper_funcs.display_progress import humanbytes, time_formatter
 from tobrot.helper_funcs.upload_to_tg import upload_to_tg
-from tobrot.dinmamoc import Commandi
-from tobrot.amocmadin import Loilacaztion
-from tobrot.helper_funcs.display_progress import time_formatter, humanbytes
 
 
-async def status_message_f(client, message):
+async def status_message_f(_, message):
     # Show All Downloads
     downloads = aria2.get_downloads()
     #
@@ -36,12 +34,12 @@ async def status_message_f(client, message):
             f"{download.status}"
         )
         if not download.is_complete:
-            msg += f"\n<code>/{Commandi.CANCEL} {download.gid}</code>"
+            msg += f"\n<code>/{Command.CANCEL} {download.gid}</code>"
         msg += "\n\n"
     # LOGGER.info(msg)
 
     if msg == "":
-        msg = Loilacaztion.NO_TOR_STATUS
+        msg = String.NO_TOR_STATUS
 
     currentTime = time_formatter((time.time() - BOT_START_TIME))
     total, used, free = shutil.disk_usage(".")
@@ -57,27 +55,28 @@ async def status_message_f(client, message):
     await message.reply_text(msg, quote=True)
 
 
-async def cancel_message_f(client, message):
+async def cancel_message_f(_, message):
     if len(message.command) > 1:
         # /cancel command
-        i_m_s_e_g = await message.reply_text(Loilacaztion.PROCESSING, quote=True)
+        i_m_s_e_g = await message.reply_text(String.PROCESSING, quote=True)
         g_id = message.command[1].strip()
         LOGGER.info(g_id)
         try:
             downloads = aria2.get_download(g_id)
             LOGGER.info(downloads)
             LOGGER.info(downloads.remove(force=True, files=True))
-            await i_m_s_e_g.edit_text(Loilacaztion.TOR_CANCELLED)
+            await i_m_s_e_g.edit_text(String.TOR_CANCELLED)
         except Exception as e:
             LOGGER.warn(str(e))
-            await i_m_s_e_g.edit_text(Loilacaztion.TOR_CANCEL_FAILED)
+            await i_m_s_e_g.edit_text(String.TOR_CANCEL_FAILED)
     else:
         await message.delete()
 
 
-async def exec_message_f(client, message):
+async def exec_message_f(_, message):
     # DELAY_BETWEEN_EDITS = 0.3
     # PROCESS_RUN_TIME = 100
+    _text = await message.reply_text("...")
     cmd = message.text.split(" ", maxsplit=1)[1]
 
     reply_to_id = message.message_id
@@ -91,10 +90,10 @@ async def exec_message_f(client, message):
     stdout, stderr = await process.communicate()
     e = stderr.decode()
     if not e:
-        e = "😐"
+        e = "None"
     o = stdout.decode()
     if not o:
-        o = "😐"
+        o = "None"
     OUTPUT = ""
     OUTPUT += (
         "<b>EXEC:</b>\n"
@@ -108,21 +107,20 @@ async def exec_message_f(client, message):
     if len(OUTPUT) > Config.MAX_MESSAGE_LENGTH:
         with open("exec.text", "w+", encoding="utf8") as out_file:
             out_file.write(str(OUTPUT))
-        await client.send_document(
-            chat_id=message.chat.id,
+        await message.reply_document(
             document="exec.text",
             caption=cmd,
             disable_notification=True,
             reply_to_message_id=reply_to_id,
         )
         os.remove("exec.text")
-        await message.delete()
+        await _text.delete()
     else:
-        await message.reply_text(OUTPUT)
+        await _text.edit_text(OUTPUT)
 
 
-async def upload_document_f(client, message):
-    imsegd = await message.reply_text(Loilacaztion.PROCESSING)
+async def upload_document_f(_, message):
+    imsegd = await message.reply_text(String.PROCESSING)
     if " " in message.text:
         recvd_command, local_file_name = message.text.split(" ", 1)
         recvd_response = await upload_to_tg(
@@ -132,9 +130,9 @@ async def upload_document_f(client, message):
     await imsegd.delete()
 
 
-async def save_rclone_conf_f(client, message):
+async def save_rclone_conf_f(_, message):
     chat_type = message.chat.type
-    r_clone_conf_uri = None
+    # r_clone_conf_uri = None
     if chat_type in ["private", "bot", "group"]:
         r_clone_conf_uri = f"https://t.me/PublicLeech/{message.chat.id}/{message.reply_to_message.message_id}"
     elif chat_type in ["supergroup", "channel"]:
@@ -149,13 +147,16 @@ async def save_rclone_conf_f(client, message):
     await message.reply_text("<code>" f"{r_clone_conf_uri}" "</code>")
 
 
-async def upload_log_file(client, message):
-    await message.reply_document(Config.LOG_FILE_ZZGEVC)
+async def upload_log_file(_, message):
+    await message.reply_document("PublicLeech.log")
 
 
 async def eval_message_f(client, message):
-    ismgese = await message.reply_text("...")
+    _text = await message.reply_text("...")
     cmd = message.text.split(" ", maxsplit=1)[1]
+    reply_to_id = message.message_id
+    if message.reply_to_message:
+        reply_to_id = message.reply_to_message.message_id
 
     old_stderr = sys.stderr
     old_stdout = sys.stdout
@@ -173,7 +174,7 @@ async def eval_message_f(client, message):
     sys.stdout = old_stdout
     sys.stderr = old_stderr
 
-    evaluation = ""
+    # evaluation = ""
     if exc:
         evaluation = exc.strip()
     elif stderr:
@@ -181,7 +182,7 @@ async def eval_message_f(client, message):
     elif stdout:
         evaluation = stdout.strip()
     else:
-        evaluation = "😐"
+        evaluation = "None"
 
     final_output = ""
     final_output += f"<b>EVAL</b>: <code>{cmd}</code>"
@@ -191,11 +192,16 @@ async def eval_message_f(client, message):
     if len(final_output) > Config.MAX_MESSAGE_LENGTH:
         with open("eval.text", "w+", encoding="utf8") as out_file:
             out_file.write(str(final_output))
-        await ismgese.reply_document(document="eval.text", caption=cmd)
+        await message.reply_document(
+            document="eval.text",
+            caption=cmd,
+            disable_notification=True,
+            reply_to_message_id=reply_to_id,
+        )
         os.remove("eval.text")
-        await ismgese.delete()
+        await _text.delete()
     else:
-        await ismgese.edit(final_output)
+        await _text.edit_text(final_output)
 
 
 async def aexec(code, client, message):

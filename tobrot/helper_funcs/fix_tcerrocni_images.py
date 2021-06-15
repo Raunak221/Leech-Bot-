@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 # (c) Shrimadhav U K
 
-import aiohttp
 import os
+
+import aiohttp
 from PIL import Image
 
 

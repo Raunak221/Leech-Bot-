@@ -6,15 +6,16 @@ import asyncio
 import os
 import time
 from shutil import copyfile
+
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 from PIL import Image
-from pyrogram.types import InputMediaDocument, InputMediaVideo, InputMediaAudio
-from tobrot.helper_funcs.display_progress import progress_for_pyrogram, humanbytes
+from pyrogram.types import InputMediaAudio, InputMediaDocument, InputMediaVideo
+
+from tobrot import LOGGER, Config
+from tobrot.helper_funcs.display_progress import humanbytes, progress_for_pyrogram
 from tobrot.helper_funcs.help_Nekmo_ffmpeg import take_screen_shot
 from tobrot.helper_funcs.split_large_files import split_large_files
-from tobrot import LOGGER
-from tobrot.config import Config
 
 
 async def copy_file(input_file, output_dir):
@@ -69,7 +70,7 @@ async def upload_to_tg(
                 caption_str,
             )
     else:
-        if os.path.getsize(local_file_name) > Config.TG_MAX_FILE_SIZE:
+        if os.path.getsize(local_file_name) > Config.MAX_FILE_SIZE:
             LOGGER.info("TODO")
             d_f_s = humanbytes(os.path.getsize(local_file_name))
             i_m_s_g = await message.reply_text(

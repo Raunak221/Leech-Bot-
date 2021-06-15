@@ -3,7 +3,7 @@
 # (c) Shrimadhav U K
 
 
-from tobrot.amocmadin import Loilacaztion
+from tobrot import String
 
 
 async def new_join_f(client, message):
@@ -13,13 +13,11 @@ async def new_join_f(client, message):
     # and LEAVE the chat
     chat_type = message.chat.type
     if chat_type != "private":
-        await message.reply_text(
-            Loilacaztion.WRONG_MESSAGE.format(CHAT_ID=message.chat.id)
-        )
+        await message.reply_text(String.WRONG_MESSAGE.format(CHAT_ID=message.chat.id))
         # leave chat
         await message.chat.leave()
 
 
 async def help_message_f(client, message):
     # display the /help message
-    await message.reply_text(Loilacaztion.HELP_MESSAGE, quote=True)
+    await message.reply_text(String.HELP_MESSAGE, quote=True)
