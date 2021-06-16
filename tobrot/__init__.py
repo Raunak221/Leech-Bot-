@@ -76,7 +76,7 @@ class Config:
     DEFAULT_THUMBNAIL = os.environ.get(
         "DEFAULT_THUMBNAIL", "https://telegra.ph/file/8b973b270f4f380a427b1.png"
     )
-    DIS_ABLE_ST_GFC_COMMAND_I = os.environ.get("DIS_ABLE_ST_GFC_COMMAND_I", False)
+    # DIS_ABLE_ST_GFC_COMMAND_I = os.environ.get("DIS_ABLE_ST_GFC_COMMAND_I", False)
     DOWNLOAD_LOCATION = os.environ.get(
         "DOWNLOAD_LOCATION", os.path.join(os.getcwd(), "DOWNLOADS")
     )

@@ -102,28 +102,25 @@ if __name__ == "__main__":
     call_back_button_handler = CallbackQueryHandler(button)
     app.add_handler(call_back_button_handler)
 
-    if Config.DIS_ABLE_ST_GFC_COMMAND_I:
-        exec_message_handler = MessageHandler(
-            exec_message_f,
-            filters=filters.command([Command.EXEC])
-            & filters.user(users=Config.AUTH_USERS),
-        )
-        app.add_handler(exec_message_handler)
+    exec_message_handler = MessageHandler(
+        exec_message_f,
+        filters=filters.command([Command.EXEC]) & filters.user(users=Config.AUTH_USERS),
+    )
+    app.add_handler(exec_message_handler)
 
-        eval_message_handler = MessageHandler(
-            eval_message_f,
-            filters=filters.command([Command.EVAL])
-            & filters.user(users=Config.AUTH_USERS),
-        )
-        app.add_handler(eval_message_handler)
+    eval_message_handler = MessageHandler(
+        eval_message_f,
+        filters=filters.command([Command.EVAL]) & filters.user(users=Config.AUTH_USERS),
+    )
+    app.add_handler(eval_message_handler)
 
-        # MEMEs COMMANDs
-        upload_document_handler = MessageHandler(
-            upload_document_f,
-            filters=filters.command([Command.UPLOAD])
-            & filters.user(users=Config.AUTH_USERS),
-        )
-        app.add_handler(upload_document_handler)
+    # MEMEs COMMANDs
+    upload_document_handler = MessageHandler(
+        upload_document_f,
+        filters=filters.command([Command.UPLOAD])
+        & filters.user(users=Config.AUTH_USERS),
+    )
+    app.add_handler(upload_document_handler)
 
     # HELP command
     help_text_handler = MessageHandler(
