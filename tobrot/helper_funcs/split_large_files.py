@@ -2,66 +2,72 @@
 # -*- coding: utf-8 -*-
 # (c) Akshay C / Shrimadhav U K
 
-import os
-import time
+import tempfile
+from pathlib import Path, PurePath
 
+import magic
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
-
 from tobrot import LOGGER, Config
 from tobrot.helper_funcs.run_shell_command import run_command
 
 
 async def split_large_files(input_file):
-    working_directory = os.path.dirname(os.path.abspath(input_file))
-    new_working_directory = os.path.join(working_directory, str(time.time()))
-    # create download directory, if not exist
-    if not os.path.isdir(new_working_directory):
-        os.makedirs(new_working_directory)
-    # if input_file.upper().endswith(("MKV", "MP4", "WEBM", "MP3", "M4A", "FLAC", "WAV")):
-    """The below logic is DERPed, so removing temporarily
-    """
-    if input_file.upper().endswith(("MKV", "MP4", "WEBM")):
+    file = Path(input_file)
+    base_path = PurePath(file.resolve())
+    # create a new download directory
+    temp_dir = PurePath(tempfile.mkdtemp(dir=base_path.parent))
+
+    file_type = magic.from_file(input_file, mime=True)
+    if file_type.startswith("video/"):
         # handle video / audio files here
         metadata = extractMetadata(createParser(input_file))
-        total_duration = 0
-        if metadata.has("duration"):
-            total_duration = metadata.get("duration").seconds
+        duration = metadata.get("duration").seconds if metadata.has("duration") else 0
+        LOGGER.info(duration)
+
         # proprietary logic to get the seconds to trim (at)
-        LOGGER.info(total_duration)
-        total_file_size = os.path.getsize(input_file)
-        LOGGER.info(total_file_size)
-        minimum_duration = (
-            total_duration / total_file_size
-        ) * Config.MAX_SPLIT_SIZE
+        file_size = file.stat().st_size
+        LOGGER.info(file_size)
+        minimum_duration = (duration / file_size) * Config.MAX_SPLIT_SIZE
         # casting to int cuz float Time Stamp can cause errors
         minimum_duration = int(minimum_duration)
-
         LOGGER.info(minimum_duration)
         # END: proprietary
+
         start_time = 0
         end_time = minimum_duration
-        base_name = os.path.basename(input_file)
-        input_extension = base_name.split(".")[-1]
-        LOGGER.info(input_extension)
 
         i = 0
         flag = False
 
-        while end_time <= total_duration:
+        while end_time <= duration:
             LOGGER.info(i)
             # file name generate
-            parted_file_name = "{}_PART_{}.{}".format(
-                str(base_name), str(i).zfill(5), str(input_extension)
+            parted_file_name = (
+                f"{str(base_path.stem)}_PART_{str(i).zfill(2)}{str(base_path.suffix)}"
             )
+            # [.stem] is for final path component without suffix
+            # "Example.mp4" --> "Example_PART_00.mp4"
 
-            output_file = os.path.join(new_working_directory, parted_file_name)
-            LOGGER.info(output_file)
-            LOGGER.info(
-                await cult_small_video(
-                    input_file, output_file, str(start_time), str(end_time)
-                )
-            )
+            output_path = temp_dir / parted_file_name
+            cmd_split_video = [
+                "ffmpeg",
+                "-i",
+                input_file,
+                "-ss",
+                str(start_time),
+                "-to",
+                str(end_time),
+                "-async",
+                "1",
+                "-strict",
+                "-2",
+                "-c",
+                "copy",
+                output_path,
+            ]
+            LOGGER.info(cmd_split_video)
+            await run_command(cmd_split_video)
             LOGGER.info(f"Start time {start_time}, End time {end_time}, Itr {i}")
 
             # adding offset of 3 seconds to ensure smooth playback
@@ -69,63 +75,37 @@ async def split_large_files(input_file):
             end_time += minimum_duration
             i += 1
 
-            if (end_time > total_duration) and not flag:
-                end_time = total_duration
+            if (end_time > duration) and not flag:
+                end_time = duration
                 flag = True
             elif flag:
                 break
 
-    elif Config.SPLIT_ALGORITHM.lower() == "hjs":
+    elif Config.SPLIT_ALGORITHM.lower() == "split":
         # handle normal files here
-        o_d_t = os.path.join(new_working_directory, os.path.basename(input_file))
-        o_d_t = o_d_t + "."
-        file_generator_command = [
+        output_path = temp_dir / f"{base_path.name}."
+        cmd_create_split = [
             "split",
             "--numeric-suffixes=1",
-            "--suffix-length=5",
+            "--suffix-length=3",
             f"--bytes={Config.MAX_SPLIT_SIZE}",
             input_file,
-            o_d_t,
+            output_path,
         ]
-        await run_command(file_generator_command)
+        LOGGER.info(cmd_create_split)
+        await run_command(cmd_create_split)
     elif Config.SPLIT_ALGORITHM.lower() == "rar":
-        o_d_t = os.path.join(
-            new_working_directory,
-            os.path.basename(input_file),
-        )
-        LOGGER.info(o_d_t)
-        file_generator_command = [
+        output_path = temp_dir / base_path.stem
+        cmd_create_rar = [
             "rar",
             "a",
             f"-v{Config.MAX_SPLIT_SIZE}b",
             "-m0",
-            o_d_t,
+            output_path,
             input_file,
         ]
-        await run_command(file_generator_command)
+        LOGGER.info(cmd_create_rar)
+        await run_command(cmd_create_rar)
 
-    return new_working_directory
-
-
-async def cult_small_video(video_file, out_put_file_name, start_time, end_time):
-    file_generator_command = [
-        "ffmpeg",
-        "-hide_banner",
-        "-i",
-        video_file,
-        "-ss",
-        start_time,
-        "-to",
-        end_time,
-        "-async",
-        "1",
-        "-strict",
-        "-2",
-        "-c",
-        "copy",
-        out_put_file_name,
-    ]
-    t_response, e_response = await run_command(file_generator_command)
-    # Wait for the subprocess to finish
-    LOGGER.info(t_response)
-    return out_put_file_name
+    file.unlink()  # Remove input_file
+    return temp_dir
