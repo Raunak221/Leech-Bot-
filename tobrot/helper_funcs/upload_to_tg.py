@@ -62,9 +62,12 @@ async def upload_to_tg(
             )
         for single_file in directory_contents:
             # recursion: will this FAIL somewhere?
+            file_path = os.path.join(local_file_name, single_file)
+            if not os.path.isfile(file_path):
+                continue
             await upload_to_tg(
                 new_m_esg,
-                os.path.join(local_file_name, single_file),
+                file_path,
                 from_user,
                 dict_contatining_uploaded_files,
                 edit_media,
@@ -91,16 +94,21 @@ async def upload_to_tg(
         )
         for le_file in totlaa_sleif:
             # recursion: will this FAIL somewhere?
+            file_path = os.path.join(splitted_dir, le_file)
+            if not os.path.isfile(file_path):
+                continue
             await upload_to_tg(
                 message,
-                os.path.join(splitted_dir, le_file),
+                file_path,
                 from_user,
                 dict_contatining_uploaded_files,
             )
     else:
-        sent_message = await upload_single_file(
-            message, local_file_name, caption_str, from_user, edit_media
-        )
+        sent_message = None
+        if os.path.isfile(local_file_name):
+            sent_message = await upload_single_file(
+                message, local_file_name, caption_str, from_user, edit_media
+            )
         if sent_message is not None:
             dict_contatining_uploaded_files[
                 os.path.basename(local_file_name)
