@@ -130,23 +130,6 @@ async def upload_document_f(_, message):
     await imsegd.delete()
 
 
-async def save_rclone_conf_f(_, message):
-    chat_type = message.chat.type
-    # r_clone_conf_uri = None
-    if chat_type in ["private", "bot", "group"]:
-        r_clone_conf_uri = f"https://t.me/PublicLeech/{message.chat.id}/{message.reply_to_message.message_id}"
-    elif chat_type in ["supergroup", "channel"]:
-        if message.chat.username:
-            r_clone_conf_uri = (
-                "please DO NOT upload confidential credentials, in a public group."
-            )
-        else:
-            r_clone_conf_uri = f"https://t.me/c/{str(message.reply_to_message.chat.id)[4:]}/{message.reply_to_message.message_id}"
-    else:
-        r_clone_conf_uri = "unknown chat_type"
-    await message.reply_text("<code>" f"{r_clone_conf_uri}" "</code>")
-
-
 async def upload_log_file(_, message):
     await message.reply_document("PublicLeech.log")
 

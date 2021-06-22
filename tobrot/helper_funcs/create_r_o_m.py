@@ -8,7 +8,7 @@ from pykeyboard import InlineKeyboard
 from pyrogram.types import InlineKeyboardButton, Message
 
 from tobrot import Config
-from tobrot.helper_funcs.r_clone import get_r_clone_config
+from tobrot.helper_funcs.rclone_handler import get_r_clone_config
 
 
 async def get_markup(message: Message):

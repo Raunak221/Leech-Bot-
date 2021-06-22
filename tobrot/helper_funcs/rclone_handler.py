@@ -18,11 +18,10 @@
 
 import os
 import re
-from typing import Union
+from typing import Optional
 
 from pyrogram import Client
 from pyrogram.errors import ChannelInvalid
-
 from tobrot import LOGGER
 from tobrot.helper_funcs.run_shell_command import run_command
 
@@ -57,8 +56,11 @@ async def copy_via_rclone(src: str, remote_name: str, remote_dir: str, conf_file
     return remote_file_link
 
 
-async def get_r_clone_config(message_link: str, py_client: Client) -> str:
-    chat_id, message_id = extract_c_m_ids(message_link)
+async def get_r_clone_config(message_link: str, py_client: Client) -> Optional[str]:
+    splited_uri = message_link.split("/")
+    chat_id, message_id = None, None
+    if len(splited_uri) == 6 and splited_uri[3] == "c":
+        chat_id, message_id = int(splited_uri[4]), int(splited_uri[5])
     try:
         conf_mesg = await py_client.get_messages(
             chat_id=chat_id, message_ids=message_id
@@ -68,23 +70,6 @@ async def get_r_clone_config(message_link: str, py_client: Client) -> str:
         return None
     down_conf_n = await py_client.download_media(message=conf_mesg)
     return down_conf_n
-
-
-def extract_c_m_ids(message_link: str) -> (Union[str, int], int):
-    p_m_link = message_link.split("/")
-    chat_id, message_id = None, None
-    if len(p_m_link) == 6:
-        # private link
-        if p_m_link[3] == "c":
-            # the Telegram private link
-            chat_id, message_id = int("-100" + p_m_link[4]), int(p_m_link[5])
-        elif p_m_link[3] == "PublicLeech":
-            # bleck magick
-            chat_id, message_id = int(p_m_link[4]), int(p_m_link[5])
-    elif len(p_m_link) == 5:
-        # public link
-        chat_id, message_id = str("@" + p_m_link[3]), int(p_m_link[4])
-    return chat_id, message_id
 
 
 async def r_clone_extract_link_s(
@@ -103,3 +88,19 @@ async def r_clone_extract_link_s(
     LOGGER.info(e_response)
     LOGGER.info(t_response)
     return t_response
+
+
+async def save_rclone_conf_f(_, message):
+    reply = message.reply_to_message
+    username = reply.chat.username
+    if reply and (not username or message.chat.type == "private"):
+        rclone_uri = f"https://t.me/c/{reply.chat.id}/{reply.message_id}"
+        await message.reply_text(
+            f"Set <code>RCLONE_CONF_URI</code> with <code>{rclone_uri}</code>"
+        )
+    else:
+        await message.reply_text(
+            "Forward your rclone.conf to a private space and retry/reply this command\n\n"
+            "<b>please DO NOT upload confidential credentials, in public groups.</b>"
+        )
+        return

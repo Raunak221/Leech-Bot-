@@ -10,7 +10,7 @@ from pyrogram.errors import FloodWait, MessageNotModified
 
 from tobrot import LOGGER, Config
 from tobrot.helper_funcs.create_compressed_archive import create_archive
-from tobrot.helper_funcs.r_clone import copy_via_rclone, get_r_clone_config
+from tobrot.helper_funcs.rclone_handler import copy_via_rclone, get_r_clone_config
 from tobrot.helper_funcs.upload_to_tg import upload_to_tg
 
 

@@ -10,6 +10,7 @@ from pyrogram.handlers import CallbackQueryHandler, MessageHandler
 
 from tobrot import LOGGER, Command, Config
 from tobrot.helper_funcs.custom_filters import message_fliter
+from tobrot.helper_funcs.rclone_handler import save_rclone_conf_f
 from tobrot.plugins.call_back_button_handler import button
 from tobrot.plugins.custom_thumbnail import clear_thumb_nail, save_thumb_nail
 from tobrot.plugins.incoming_message_fn import (
@@ -23,7 +24,6 @@ from tobrot.plugins.status_message_fn import (
     cancel_message_f,
     eval_message_f,
     exec_message_f,
-    save_rclone_conf_f,
     status_message_f,
     upload_document_f,
     upload_log_file,
