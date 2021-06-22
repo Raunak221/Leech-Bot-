@@ -57,6 +57,9 @@ async def copy_via_rclone(src: str, remote_name: str, remote_dir: str, conf_file
 
 
 async def get_r_clone_config(message_link: str, py_client: Client) -> Optional[str]:
+    config_path = os.path.join(os.getcwd(), ".config", "rclone", "rclone.conf")
+    if os.path.exists(config_path):
+        return config_path
     splited_uri = message_link.split("/")
     chat_id, message_id = None, None
     if len(splited_uri) == 6 and splited_uri[3] == "c":
@@ -68,8 +71,7 @@ async def get_r_clone_config(message_link: str, py_client: Client) -> Optional[s
     except ChannelInvalid:
         LOGGER.info("invalid RClone config URL. this is NOT an ERROR")
         return None
-    down_conf_n = await py_client.download_media(message=conf_mesg)
-    return down_conf_n
+    return await py_client.download_media(message=conf_mesg, file_name=config_path)
 
 
 async def r_clone_extract_link_s(
