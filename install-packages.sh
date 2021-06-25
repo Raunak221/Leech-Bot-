@@ -4,7 +4,9 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-mkdir /tmp
+ROOT=$(pwd)
+TMP_DIR=$(mktemp -d)
+cd "$TMP_DIR"
 
 # rclone stuff
 RCI_SCRIPT="rclone_installer_script.sh"
@@ -20,7 +22,7 @@ RCLONE() {
 	chmod +x $RCI_SCRIPT
 	echo "Installing rclone..."
 	./$RCI_SCRIPT &>/dev/null
-	echo "Done! Installed $(rclone version | head -n 1)"
+	echo "Done! Installed $(rclone version 2>/dev/null | head -n 1)"
 }
 
 # installing aria2
@@ -36,7 +38,7 @@ ARIA2() {
 # install pip packages
 PIP() {
 	echo "Installing pip packages..."
-	pip3 install -q --no-cache-dir -r requirements.txt
+	pip3 install -q --no-cache-dir -r "$ROOT/requirements.txt"
 	echo "Done! Installed packages are.."
 	pip3 freeze
 }
@@ -44,11 +46,12 @@ PIP() {
 # cleanup
 CLEAN() {
 	echo "Cleaning external scripts..."
-	rm -rf $RCI_SCRIPT $ARI_SCRIPT /tmp/
+	rm -rf /tmp
 	echo "Done! Cleaned all"
 }
 
 RCLONE
 ARIA2
 PIP
-CLEAN
+trap CLEAN EXIT
+exit 0

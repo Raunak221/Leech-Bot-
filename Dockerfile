@@ -1,11 +1,8 @@
 # creates a layer from the base Docker image.
-FROM python:3.9.2-slim-buster
+FROM python:3.9.5-slim-buster
 
 # set working directory
 WORKDIR /app
-
-# https://shouldiblamecaching.com/
-ENV PIP_NO_CACHE_DIR=1
 
 # http://bugs.python.org/issue19846
 # https://github.com/SpEcHiDe/PublicLeech/pull/97
@@ -19,26 +16,18 @@ RUN sed -i.bak 's/us-west-2\.ec2\.//' /etc/apt/sources.list
 
 # synchronize the package index files from their sources.
 # and install required pre-requisites before proceeding ...
-RUN apt update \
-	&& apt install -y \
-	curl \
-	git \
-	gnupg2 \
+RUN apt-get update \
+	&& apt-get install -y \
 	software-properties-common \
-	wget \
-	# install gcc [ PEP 517 ]
-	build-essential gcc \
 	&& apt-add-repository non-free
 
-# add required files to sources.list
-RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
-    echo "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" >> /etc/apt/sources.list
-
-# install required packages
-RUN apt update \
-	&& apt install -y --no-install-recommends \
+# resynchronize and install required packages
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends \
 	# this package is required to fetch "contents" via "TLS"
 	apt-transport-https \
+	# install gcc [ PEP 517 ]
+	build-essential gcc \
 	# install megatools and dependencies
 	megatools jq pv \
 	# install encoding tools
@@ -46,11 +35,11 @@ RUN apt update \
 	# install extraction tools
 	p7zip rar unrar unzip zip \
 	# miscellaneous helpers
-	procps \
-	# clean up previously installed SPC
-	&& apt purge -y software-properties-common \
+	curl git procps wget \
+	# clean up automatically installed and are no longer required packages
+	&& apt-get autoremove && apt-get clean  \
 	# clean up the container "layer", after we are done
-	&& rm -rf /var/lib/apt/lists /var/cache/apt/archives /tmp
+	&& rm -rf /var/lib/apt/lists
 	
 # each instruction creates one layer
 # Only the instructions RUN, COPY, ADD create layers.
