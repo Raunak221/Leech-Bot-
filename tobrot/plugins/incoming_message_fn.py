@@ -4,7 +4,7 @@
 
 import os
 
-from tobrot import LOGGER, Config, aria2
+from tobrot import LOGGER, Config, Command, aria2
 from tobrot.helper_funcs.create_r_o_m import get_markup
 from tobrot.helper_funcs.download_aria_p_n import (
     call_apropriate_function,
@@ -36,6 +36,12 @@ async def incoming_message_f(client, message):
 async def leech_commandi_f(client, message):
     m_ = await message.reply_text("checking", quote=True)
     m_sgra = " ".join(message.command[1:])
+    if not message.reply_to_message:
+        await m_.edit_text(
+            "No URIs to download\n"
+            f"Reply <code>/{Command.LEECH}</code> to an URI"
+        )
+        return
     # get link from the incoming message
     dl_url, cf_name, _, _ = await extract_link(message.reply_to_message, "LEECH")
     LOGGER.info(f"extracted /leech links {dl_url}")
@@ -81,6 +87,12 @@ async def incoming_youtube_dl_f(client, message):
     """ /ytdl command """
     i_m_sefg = await message.reply_text("processing", quote=True)
     # LOGGER.info(message)
+    if not message.reply_to_message:
+        await i_m_sefg.edit_text(
+            "No ytdl links to download\n"
+            f"Reply <code>/{Command.YTDL}</code> to a ytdl link"
+        )
+        return
     # extract link from message
     dl_url, cf_name, yt_dl_user_name, yt_dl_pass_word = await extract_link(
         message.reply_to_message, "YTDL"
@@ -120,8 +132,3 @@ async def incoming_youtube_dl_f(client, message):
             await i_m_sefg.delete()
         else:
             await i_m_sefg.edit_text(text=text_message, reply_markup=reply_markup)
-    else:
-        await i_m_sefg.edit_text(
-            "**FCUK**! wat have you entered. \nPlease read /help \n"
-            f"<b>API Error</b>: {cf_name}"
-        )
