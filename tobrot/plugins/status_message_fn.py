@@ -121,13 +121,24 @@ async def exec_message_f(_, message):
 
 async def upload_document_f(_, message):
     imsegd = await message.reply_text(String.PROCESSING)
-    if " " in message.text:
-        recvd_command, local_file_name = message.text.split(" ", 1)
-        recvd_response = await upload_to_tg(
-            imsegd, local_file_name, message.from_user.id, {}
+    if " " not in message.text:
+        await imsegd.edit_text(
+            f"<code>/{Command.UPLOAD}</code> <i>File/Directory path to upload</i>"
         )
-        LOGGER.info(recvd_response)
-    await imsegd.delete()
+        return
+    else:
+        _, local_file_name = message.text.split(" ", 1)
+        if not os.path.exists(local_file_name):
+            await imsegd.edit_text(f"Unable to find the path; <i>{local_file_name}</i>")
+            return
+        else:
+            recvd_response = await upload_to_tg(
+                imsegd, local_file_name, message.from_user.id, {}
+            )
+            LOGGER.info(recvd_response)
+            await imsegd.edit_text(
+                f"<a href='tg://user?id={message.from_user.id}'>Upload completed</a>"
+            )
 
 
 async def upload_log_file(_, message):
