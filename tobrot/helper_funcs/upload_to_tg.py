@@ -63,7 +63,7 @@ async def upload_to_tg(
         for single_file in directory_contents:
             # recursion: will this FAIL somewhere?
             file_path = os.path.join(local_file_name, single_file)
-            if not os.path.isfile(file_path):
+            if not os.path.exists(file_path):
                 continue
             await upload_to_tg(
                 new_m_esg,
