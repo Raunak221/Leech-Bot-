@@ -64,7 +64,7 @@ async def youtube_dl_call_back(bot, update):
         "nooverwrites": True,
         "continuedl": True,
         "noplaylist": True,
-        "max_filesize": Config.MAX_FILE_SIZE,
+        # "max_filesize": Config.MAX_FILE_SIZE,
     }
     if yt_dl_user_name and yt_dl_pass_word:
         ytdl_opts.update(
