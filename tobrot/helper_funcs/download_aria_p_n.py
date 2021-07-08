@@ -1,6 +1,19 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# (c) Shrimadhav U K
+#  -*- coding: utf-8 -*-
+#  Copyright (C) 2020 PublicLeech Authors
+
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Affero General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Affero General Public License for more details.
+
+#  You should have received a copy of the GNU Affero General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import asyncio
 import configparser
@@ -25,7 +38,9 @@ def add_magnet(aria_instance, magnetic_link, c_file_name):
     except Exception as e:
         return (
             False,
-            "**FAILED** \n" + str(e) + " \nPlease do not send SLOW links. Read /help",
+            "<b>FAILED</b> \n"
+            + str(e)
+            + " \nPlease do not send SLOW links. Read /help",
         )
     else:
         return True, "" + download.gid + ""
@@ -35,7 +50,7 @@ def add_torrent(aria_instance, torrent_file_path):
     if torrent_file_path is None:
         return (
             False,
-            "**FAILED** \n\nsomething wrongings when trying to add <u>TORRENT</u> file",
+            "<b>FAILED</b> \n\nsomething wrongings when trying to add <u>TORRENT</u> file",
         )
     if os.path.exists(torrent_file_path):
         # Add Torrent Into Queue
@@ -46,14 +61,14 @@ def add_torrent(aria_instance, torrent_file_path):
         except Exception as e:
             return (
                 False,
-                "**FAILED** \n"
+                "<b>FAILED</b> \n"
                 + str(e)
                 + " \nPlease do not send SLOW links. Read /help",
             )
         else:
             return True, "" + download.gid + ""
     else:
-        return False, "**FAILED** \n\nPlease try other sources to get workable link"
+        return False, "<b>FAILED</b> \n\nPlease try other sources to get workable link"
 
 
 def add_url(aria_instance, text_url, c_file_name):
@@ -69,7 +84,9 @@ def add_url(aria_instance, text_url, c_file_name):
     except Exception as e:
         return (
             False,
-            "**FAILED** \n" + str(e) + " \nPlease do not send SLOW links. Read /help",
+            "<b>FAILED</b> \n"
+            + str(e)
+            + " \nPlease do not send SLOW links. Read /help",
         )
     else:
         return True, "" + download.gid + ""
@@ -240,7 +257,7 @@ async def check_progress_for_dl(aria2, gid, event, previous_message):
                     previous_message = msg
             else:
                 msg = file.error_message
-                await event.edit(f"`{msg}`")
+                await event.edit(f"<code>{msg}</code>")
                 return False
             await asyncio.sleep(Config.EDIT_SLEEP_TIME_OUT)
             return await check_progress_for_dl(aria2, gid, event, previous_message)

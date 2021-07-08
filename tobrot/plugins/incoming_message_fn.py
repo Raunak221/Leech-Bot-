@@ -1,10 +1,23 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# (c) Shrimadhav U K / Akshay C
+#  -*- coding: utf-8 -*-
+#  Copyright (C) 2020 PublicLeech Authors
+
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Affero General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Affero General Public License for more details.
+
+#  You should have received a copy of the GNU Affero General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
 
-from tobrot import LOGGER, Config, Command, aria2
+from tobrot import LOGGER, Command, Config, aria2
 from tobrot.helper_funcs.create_r_o_m import get_markup
 from tobrot.helper_funcs.download_aria_p_n import (
     call_apropriate_function,
@@ -38,8 +51,7 @@ async def leech_commandi_f(client, message):
     m_sgra = " ".join(message.command[1:])
     if not message.reply_to_message:
         await m_.edit_text(
-            "No URIs to download\n"
-            f"Reply <code>/{Command.LEECH}</code> to an URI"
+            "No URIs to download\n" f"Reply <code>/{Command.LEECH}</code> to an URI"
         )
         return
     # get link from the incoming message
@@ -84,7 +96,7 @@ async def leech_commandi_f(client, message):
 
 
 async def incoming_youtube_dl_f(client, message):
-    """ /ytdl command """
+    """/ytdl command"""
     i_m_sefg = await message.reply_text("processing", quote=True)
     # LOGGER.info(message)
     if not message.reply_to_message:

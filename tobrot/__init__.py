@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# (c) Shrimadhav U K
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  -*- coding: utf-8 -*-
+#  Copyright (C) 2020 PublicLeech Authors
 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Affero General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 
-# You should have received a copy of the GNU Affero General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Affero General Public License for more details.
+
+#  You should have received a copy of the GNU Affero General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # the logging things
 import logging
@@ -21,6 +22,7 @@ import time
 from logging.handlers import RotatingFileHandler
 
 import aria2p
+from dotenv import load_dotenv
 
 # fmt: off
 aria2 = aria2p.API(
@@ -47,7 +49,7 @@ logging.basicConfig(
         RotatingFileHandler(
             "PublicLeech.log",
             maxBytes=50000000,
-            backupCount=10,
+            backupCount=1,
         ),
         logging.StreamHandler(),
     ],
@@ -56,6 +58,9 @@ logging.getLogger("pyrogram").setLevel(logging.WARNING)
 logging.getLogger("PIL.Image").setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 LOGGER = logging.getLogger(__name__)
+
+# apparently, no error appears even if the path does not exists
+load_dotenv("config.env")
 
 
 class Config:
