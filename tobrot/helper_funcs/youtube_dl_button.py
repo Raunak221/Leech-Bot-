@@ -9,6 +9,7 @@ from datetime import datetime
 import yt_dlp
 
 from tobrot import LOGGER, Config
+from tobrot.helper_funcs.display_progress import time_formatter
 from tobrot.helper_funcs.extract_link_from_message import extract_link
 from tobrot.helper_funcs.upload_to_tg import upload_to_tg
 from tobrot.helper_funcs.youtube_dl_extractor import yt_extract_info
@@ -130,7 +131,7 @@ async def youtube_dl_call_back(bot, update):
         dir_contents = len(os.listdir(tmp_directory_for_each_user))
         # dir_contents.sort()
         await update.message.edit_caption(
-            caption=f"Download completed in {time_taken_for_download} seconds"
+            caption=f"Download completed in {time_formatter(time_taken_for_download)}"
             f"\nfound {dir_contents} file(s)"
         )
         user_id = update.from_user.id
