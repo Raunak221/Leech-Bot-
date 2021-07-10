@@ -23,9 +23,9 @@ import sys
 import time
 import traceback
 
-from tobrot import BOT_START_TIME, LOGGER, Command, Config, String, aria2
-from tobrot.helper_funcs.display_progress import humanbytes, time_formatter
-from tobrot.helper_funcs.upload_to_tg import upload_to_tg
+from publicleechgroup import BOT_START_TIME, LOGGER, Command, Config, String, aria2
+from publicleechgroup.helper_funcs.display_progress import humanbytes, time_formatter
+from publicleechgroup.helper_funcs.upload_to_tg import upload_to_tg
 
 
 async def status_message_f(_, message):
@@ -73,14 +73,14 @@ async def cancel_message_f(_, message):
         # /cancel command
         i_m_s_e_g = await message.reply_text(String.PROCESSING, quote=True)
         g_id = message.command[1].strip()
-        LOGGER.info(g_id)
+        LOGGER(__name__).info(g_id)
         try:
             downloads = aria2.get_download(g_id)
-            LOGGER.info(downloads)
-            LOGGER.info(downloads.remove(force=True, files=True))
+            LOGGER(__name__).info(downloads)
+            LOGGER(__name__).info(downloads.remove(force=True, files=True))
             await i_m_s_e_g.edit_text(String.TOR_CANCELLED)
         except Exception as e:
-            LOGGER.warn(str(e))
+            LOGGER(__name__).warn(str(e))
             await i_m_s_e_g.edit_text(String.TOR_CANCEL_FAILED)
     else:
         await message.delete()
@@ -148,7 +148,7 @@ async def upload_document_f(_, message):
             recvd_response = await upload_to_tg(
                 imsegd, local_file_name, message.from_user.id, {}
             )
-            LOGGER.info(recvd_response)
+            LOGGER(__name__).info(recvd_response)
             await imsegd.edit_text(
                 f"<a href='tg://user?id={message.from_user.id}'>Upload completed</a>"
             )

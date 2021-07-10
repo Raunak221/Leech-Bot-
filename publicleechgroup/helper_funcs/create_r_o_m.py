@@ -20,8 +20,8 @@ import configparser
 from pykeyboard import InlineKeyboard
 from pyrogram.types import InlineKeyboardButton, Message
 
-from tobrot import Config
-from tobrot.helper_funcs.rclone_handler import get_r_clone_config
+from publicleechgroup import Config
+from publicleechgroup.helper_funcs.rclone_handler import get_r_clone_config
 
 
 async def get_markup(message: Message):

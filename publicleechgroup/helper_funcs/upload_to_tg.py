@@ -26,10 +26,13 @@ from hachoir.parser import createParser
 from PIL import Image
 from pyrogram.types import InputMediaAudio, InputMediaDocument, InputMediaVideo
 
-from tobrot import LOGGER, Config
-from tobrot.helper_funcs.display_progress import humanbytes, progress_for_pyrogram
-from tobrot.helper_funcs.help_Nekmo_ffmpeg import take_screen_shot
-from tobrot.helper_funcs.split_large_files import split_large_files
+from publicleechgroup import LOGGER, Config
+from publicleechgroup.helper_funcs.display_progress import (
+    humanbytes,
+    progress_for_pyrogram,
+)
+from publicleechgroup.helper_funcs.help_Nekmo_ffmpeg import take_screen_shot
+from publicleechgroup.helper_funcs.split_large_files import split_large_files
 
 
 async def copy_file(input_file, output_dir):
@@ -47,11 +50,11 @@ async def upload_to_tg(
     edit_media=False,
     custom_caption=None,
 ):
-    LOGGER.info(local_file_name)
+    LOGGER(__name__).info(local_file_name)
     base_file_name = os.path.basename(local_file_name)
     caption_str = custom_caption
     if not caption_str or not edit_media:
-        LOGGER.info("fall-back to default file_name")
+        LOGGER(__name__).info("fall-back to default file_name")
         caption_str = "<code>"
         caption_str += base_file_name
         caption_str += "</code>"
@@ -65,7 +68,7 @@ async def upload_to_tg(
         directory_contents = os.listdir(local_file_name)
         directory_contents.sort()
         # number_of_files = len(directory_contents)
-        LOGGER.info(directory_contents)
+        LOGGER(__name__).info(directory_contents)
         new_m_esg = message
         if not message.photo:
             new_m_esg = await message.reply_text(
@@ -87,7 +90,7 @@ async def upload_to_tg(
                 caption_str,
             )
     elif os.path.getsize(local_file_name) > Config.MAX_FILE_SIZE:
-        LOGGER.info("TODO")
+        LOGGER(__name__).info("TODO")
         d_f_s = humanbytes(os.path.getsize(local_file_name))
         i_m_s_g = await message.reply_text(
             "Telegram does not support uploading this file.\n"
@@ -98,7 +101,7 @@ async def upload_to_tg(
         totlaa_sleif = os.listdir(splitted_dir)
         totlaa_sleif.sort()
         number_of_files = len(totlaa_sleif)
-        LOGGER.info(totlaa_sleif)
+        LOGGER(__name__).info(totlaa_sleif)
         ba_se_file_name = os.path.basename(local_file_name)
         await i_m_s_g.edit_text(
             f"Detected File Size: {d_f_s} 😡\n"
@@ -140,7 +143,7 @@ async def upload_single_file(
     thumbnail_location = os.path.join(
         Config.DOWNLOAD_LOCATION, "thumbnails", str(from_user) + ".jpg"
     )
-    LOGGER.info(thumbnail_location)
+    LOGGER(__name__).info(thumbnail_location)
     #
     try:
         message_for_progress_display = message

@@ -18,8 +18,8 @@
 # the logging things
 import logging
 import os
-import time
 from logging.handlers import RotatingFileHandler
+from time import time
 
 import aria2p
 from dotenv import load_dotenv
@@ -34,7 +34,7 @@ aria2 = aria2p.API(
 )
 # fmt: on
 
-BOT_START_TIME = time.time()
+BOT_START_TIME = time()
 
 if os.path.exists("PublicLeech.log"):
     with open("PublicLeech.log", "r+") as f_d:
@@ -57,7 +57,6 @@ logging.basicConfig(
 logging.getLogger("pyrogram").setLevel(logging.WARNING)
 logging.getLogger("PIL.Image").setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
-LOGGER = logging.getLogger(__name__)
 
 # apparently, no error appears even if the path does not exists
 load_dotenv("config.env")
@@ -146,3 +145,8 @@ class String:
     WRONG_MESSAGE = os.environ.get(
         "S_WRONG_MESSAGE", "current CHAT ID: <code>{CHAT_ID}</code>"
     )
+
+
+def LOGGER(name: str) -> logging.Logger:
+    """get a Logger object"""
+    return logging.getLogger(name)

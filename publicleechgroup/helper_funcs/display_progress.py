@@ -21,7 +21,7 @@ import time
 
 from pyrogram.errors import FloodWait
 
-from tobrot import Config
+from publicleechgroup import Config
 
 
 async def progress_for_pyrogram(current, total, filename, message, start):

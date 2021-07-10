@@ -21,11 +21,11 @@ from datetime import datetime
 
 import yt_dlp
 
-from tobrot import LOGGER, Config
-from tobrot.helper_funcs.display_progress import time_formatter
-from tobrot.helper_funcs.extract_link_from_message import extract_link
-from tobrot.helper_funcs.upload_to_tg import upload_to_tg
-from tobrot.helper_funcs.youtube_dl_extractor import yt_extract_info
+from publicleechgroup import LOGGER, Config
+from publicleechgroup.helper_funcs.display_progress import time_formatter
+from publicleechgroup.helper_funcs.extract_link_from_message import extract_link
+from publicleechgroup.helper_funcs.upload_to_tg import upload_to_tg
+from publicleechgroup.helper_funcs.youtube_dl_extractor import yt_extract_info
 
 
 async def youtube_dl_call_back(bot, update):
@@ -59,7 +59,7 @@ async def youtube_dl_call_back(bot, update):
     youtube_dl_url, cf_name, yt_dl_user_name, yt_dl_pass_word = await extract_link(
         current_message, "YTDL"
     )
-    LOGGER.info(youtube_dl_url)
+    LOGGER(__name__).info(youtube_dl_url)
     #
     custom_file_name = "%(title)s.%(ext)s"
     # Assign custom filename if specified
@@ -158,7 +158,7 @@ async def youtube_dl_call_back(bot, update):
             cf_name or info.get("title", ""),
         )
 
-        LOGGER.info(final_response)
+        LOGGER(__name__).info(final_response)
         #
         try:
             shutil.rmtree(tmp_directory_for_each_user)

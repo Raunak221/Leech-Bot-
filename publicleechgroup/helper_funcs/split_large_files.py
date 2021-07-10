@@ -22,8 +22,8 @@ import magic
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 
-from tobrot import LOGGER, Config
-from tobrot.helper_funcs.run_shell_command import run_command
+from publicleechgroup import LOGGER, Config
+from publicleechgroup.helper_funcs.run_shell_command import run_command
 
 
 async def split_large_files(input_file):
@@ -37,15 +37,15 @@ async def split_large_files(input_file):
         # handle video / audio files here
         metadata = extractMetadata(createParser(input_file))
         duration = metadata.get("duration").seconds if metadata.has("duration") else 0
-        LOGGER.info(duration)
+        LOGGER(__name__).info(duration)
 
         # proprietary logic to get the seconds to trim (at)
         file_size = file.stat().st_size
-        LOGGER.info(file_size)
+        LOGGER(__name__).info(file_size)
         minimum_duration = (duration / file_size) * Config.MAX_SPLIT_SIZE
         # casting to int cuz float Time Stamp can cause errors
         minimum_duration = int(minimum_duration)
-        LOGGER.info(minimum_duration)
+        LOGGER(__name__).info(minimum_duration)
         # END: proprietary
 
         start_time = 0
@@ -55,7 +55,7 @@ async def split_large_files(input_file):
         flag = False
 
         while end_time <= duration:
-            LOGGER.info(i)
+            LOGGER(__name__).info(i)
             # file name generate
             parted_file_name = (
                 f"{str(base_path.stem)}_PART_{str(i).zfill(2)}{str(base_path.suffix)}"
@@ -80,9 +80,11 @@ async def split_large_files(input_file):
                 "copy",
                 output_path,
             ]
-            LOGGER.info(cmd_split_video)
+            LOGGER(__name__).info(cmd_split_video)
             await run_command(cmd_split_video)
-            LOGGER.info(f"Start time {start_time}, End time {end_time}, Itr {i}")
+            LOGGER(__name__).info(
+                f"Start time {start_time}, End time {end_time}, Itr {i}"
+            )
 
             # adding offset of 3 seconds to ensure smooth playback
             start_time = end_time - 3
@@ -106,7 +108,7 @@ async def split_large_files(input_file):
             input_file,
             output_path,
         ]
-        LOGGER.info(cmd_create_split)
+        LOGGER(__name__).info(cmd_create_split)
         await run_command(cmd_create_split)
     elif Config.SPLIT_ALGORITHM.lower() == "rar":
         output_path = temp_dir / base_path.stem
@@ -118,7 +120,7 @@ async def split_large_files(input_file):
             output_path,
             input_file,
         ]
-        LOGGER.info(cmd_create_rar)
+        LOGGER(__name__).info(cmd_create_rar)
         await run_command(cmd_create_rar)
 
     file.unlink()  # Remove input_file

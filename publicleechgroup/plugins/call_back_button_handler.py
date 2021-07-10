@@ -17,13 +17,13 @@
 
 from pyrogram.types import CallbackQuery
 
-from tobrot import LOGGER, String
-from tobrot.helper_funcs.icntaosrtsba import leech_btn_k, ytdl_btn_k
-from tobrot.helper_funcs.youtube_dl_button import youtube_dl_call_back
+from publicleechgroup import LOGGER, String
+from publicleechgroup.helper_funcs.icntaosrtsba import leech_btn_k, ytdl_btn_k
+from publicleechgroup.helper_funcs.youtube_dl_button import youtube_dl_call_back
 
 
 async def button(bot, update: CallbackQuery):
-    LOGGER.info(update)
+    LOGGER(__name__).info(update)
     if not update.message.reply_to_message:
         await update.answer(text=String.TGD_YTLD_STOOPID_DRUSER, show_alert=True)
         return

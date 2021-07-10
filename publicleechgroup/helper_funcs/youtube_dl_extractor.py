@@ -23,8 +23,8 @@ import yt_dlp
 from pykeyboard import InlineKeyboard
 from pyrogram.types import InlineKeyboardButton
 
-from tobrot import Config
-from tobrot.helper_funcs.display_progress import humanbytes
+from publicleechgroup import Config
+from publicleechgroup.helper_funcs.display_progress import humanbytes
 
 
 # https://stackoverflow.com/a/64506715
@@ -162,5 +162,8 @@ async def extract_youtube_dl_formats(
                 )
             )
             # LOGGER.info(ikeyboard)
-    succss_mesg = "Select the desired format: 👇<br> <u>mentioned</u> <i>file size might be approximate</i>"
+    succss_mesg = (
+        "Select the desired format: 👇\n"
+        "<u>mentioned</u> <i>file size might be approximate</i>"
+    )
     return thumbnail, succss_mesg, ikeyboard

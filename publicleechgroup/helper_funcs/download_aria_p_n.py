@@ -21,10 +21,13 @@ import os
 
 from pyrogram.errors import FloodWait, MessageNotModified
 
-from tobrot import LOGGER, Config
-from tobrot.helper_funcs.create_compressed_archive import create_archive
-from tobrot.helper_funcs.rclone_handler import copy_via_rclone, get_r_clone_config
-from tobrot.helper_funcs.upload_to_tg import upload_to_tg
+from publicleechgroup import LOGGER, Config
+from publicleechgroup.helper_funcs.create_compressed_archive import create_archive
+from publicleechgroup.helper_funcs.rclone_handler import (
+    copy_via_rclone,
+    get_r_clone_config,
+)
+from publicleechgroup.helper_funcs.upload_to_tg import upload_to_tg
 
 
 def add_magnet(aria_instance, magnetic_link, c_file_name):
@@ -108,7 +111,7 @@ async def fake_etairporpa_call(
         sagtus, err_message = add_url(aria_instance, incoming_link, c_file_name)
     if not sagtus:
         return sagtus, err_message
-    LOGGER.info(err_message)
+    LOGGER(__name__).info(err_message)
     # https://stackoverflow.com/a/58213653/4723940
     await check_progress_for_dl(
         aria_instance, err_message, sent_message_to_update_tg_p, None
@@ -159,7 +162,7 @@ async def call_apropriate_function(
         sagtus, err_message = add_url(aria_instance, incoming_link, c_file_name)
     if not sagtus:
         return sagtus, err_message
-    LOGGER.info(err_message)
+    LOGGER(__name__).info(err_message)
     # https://stackoverflow.com/a/58213653/4723940
     await check_progress_for_dl(
         aria_instance, err_message, sent_message_to_update_tg_p, None
@@ -187,12 +190,12 @@ async def call_apropriate_function(
             to_upload_file = check_if_file
     #
     response = {}
-    LOGGER.info(response)
+    LOGGER(__name__).info(response)
     user_id = sent_message_to_update_tg_p.reply_to_message.from_user.id
     final_response = await upload_to_tg(
         sent_message_to_update_tg_p, to_upload_file, user_id, response
     )
-    LOGGER.info(final_response)
+    LOGGER(__name__).info(final_response)
     message_to_send = ""
     for key_f_res_se in final_response:
         local_file_name = key_f_res_se
@@ -226,7 +229,6 @@ async def check_progress_for_dl(aria2, gid, event, previous_message):
         complete = file.is_complete
         if not complete:
             if not file.error_message:
-                msg = ""
                 # sometimes, this weird https://t.me/c/1220993104/392975
                 # error creeps up
                 # TODO: temporary workaround
@@ -276,11 +278,11 @@ async def check_progress_for_dl(aria2, gid, event, previous_message):
         )
         return False
     except Exception as e:
-        LOGGER.info(str(e))
+        LOGGER(__name__).info(str(e))
         if " not found" in str(e) or "'file'" in str(e):
             await event.edit("Download Canceled :\n<code>{}</code>".format(file.name))
         else:
-            LOGGER.info(str(e))
+            LOGGER(__name__).info(str(e))
             await event.edit(
                 "<u>error</u> :\n<code>{}</code> \n\n#error".format(str(e))
             )

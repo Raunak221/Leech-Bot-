@@ -19,7 +19,7 @@ import os
 
 from PIL import Image
 
-from tobrot import Config, String
+from publicleechgroup import Config, String
 
 
 async def save_thumb_nail(_, message):

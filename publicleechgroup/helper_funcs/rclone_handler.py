@@ -23,8 +23,8 @@ from typing import Optional
 from pyrogram import Client
 from pyrogram.errors import ChannelInvalid
 
-from tobrot import LOGGER
-from tobrot.helper_funcs.run_shell_command import run_command
+from publicleechgroup import LOGGER
+from publicleechgroup.helper_funcs.run_shell_command import run_command
 
 
 async def copy_via_rclone(src: str, remote_name: str, remote_dir: str, conf_file: str):
@@ -44,16 +44,16 @@ async def copy_via_rclone(src: str, remote_name: str, remote_dir: str, conf_file
         "--drive-chunk-size",
         "64M",
     ]
-    LOGGER.info(command_to_exec)
+    LOGGER(__name__).info(command_to_exec)
     t_response, e_response = await run_command(command_to_exec)
     # Wait for the subprocess to finish
-    LOGGER.info(e_response)
-    LOGGER.info(t_response)
+    LOGGER(__name__).info(e_response)
+    LOGGER(__name__).info(t_response)
     # https://github.com/rg3/youtube-dl/issues/2630#issuecomment-38635239
     remote_file_link = await r_clone_extract_link_s(
         re.escape(src), remote_name, remote_dir, conf_file
     )
-    LOGGER.info(remote_file_link)
+    LOGGER(__name__).info(remote_file_link)
     return remote_file_link
 
 
@@ -70,7 +70,7 @@ async def get_r_clone_config(message_link: str, py_client: Client) -> Optional[s
             chat_id=chat_id, message_ids=message_id
         )
     except ChannelInvalid:
-        LOGGER.info("invalid RClone config URL. this is NOT an ERROR")
+        LOGGER(__name__).info("invalid RClone config URL. this is NOT an ERROR")
         return None
     return await py_client.download_media(message=conf_mesg, file_name=config_path)
 
@@ -85,11 +85,11 @@ async def r_clone_extract_link_s(
         f"{remote_name}:{remote_dir}",
         f"--config={conf_file}",
     ]
-    LOGGER.info(command_to_exec)
+    LOGGER(__name__).info(command_to_exec)
     t_response, e_response = await run_command(command_to_exec)
     # Wait for the subprocess to finish
-    LOGGER.info(e_response)
-    LOGGER.info(t_response)
+    LOGGER(__name__).info(e_response)
+    LOGGER(__name__).info(t_response)
     return t_response
 
 

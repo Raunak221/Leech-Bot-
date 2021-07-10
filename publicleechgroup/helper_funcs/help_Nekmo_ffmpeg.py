@@ -15,32 +15,27 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import shutil
+import time
 from pathlib import Path, PurePath
 
-from tobrot import LOGGER
-from tobrot.helper_funcs.run_shell_command import run_command
+from publicleechgroup.helper_funcs.run_shell_command import run_command
 
 
-async def create_archive(input_path):
-    base_dir_name = PurePath(input_path).name[-249:]
-    # nothing just 256 - 7 (.tar.gz), btw caption limit is 1024
-    compressed_file_name = f"{base_dir_name}.tar.gz"
-    # fix for https://t.me/c/1434259219/13344
-    cmd_create_archive = [
-        "tar",
-        "-zcvf",
-        compressed_file_name,
-        f"{input_path}",
+async def take_screen_shot(video_file, output_directory, ttl):
+    # https://stackoverflow.com/a/13891070/4723940
+    output_file = PurePath(output_directory).joinpath(str(time.time()) + ".jpg")
+    cmd_generate_thumbnail = [
+        "ffmpeg",
+        "-ss",
+        str(ttl),
+        "-i",
+        video_file,
+        "-vframes",
+        "1",
+        output_file,
     ]
-    LOGGER.info(cmd_create_archive)
-    _, error = await run_command(cmd_create_archive)
-    if error:
-        LOGGER.info(error)
+    # width = "90"
+    await run_command(cmd_generate_thumbnail)
     # Wait for the subprocess to finish
-    _path = Path(input_path)
-    if _path.is_dir():
-        shutil.rmtree(_path)
-    elif _path.is_file():
-        _path.unlink()
-    return compressed_file_name if Path(compressed_file_name).exists() else None
+    #
+    return str(output_file) if Path(output_file).exists() else None
