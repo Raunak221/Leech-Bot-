@@ -55,7 +55,7 @@ class Bot(Client):
             workers=343,
             workdir=Config.DOWNLOAD_LOCATION,
             parse_mode="html",
-            sleep_threshold=1800,
+            sleep_threshold=Config.SLEEP_THRES_HOLD,
             # TODO: utilize PSP
             # plugins={
             #     "root": "bot/plugins"

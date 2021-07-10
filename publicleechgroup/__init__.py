@@ -92,6 +92,7 @@ class Config:
     RCLONE_CONF_URI = os.environ.get("RCLONE_CONF_URI", None)
     RCLONE_DEST = os.environ.get("RCLONE_DEST", "/PublicLeech")
     BUTTONS_MODE = os.environ.get("BUTTONS_MODE", False)
+    SLEEP_THRES_HOLD = int(os.environ.get("SLEEP_THRES_HOLD", 98712))
     SPLIT_ALGORITHM = os.environ.get("SPLIT_ALGORITHM", "split")
     # add offensive API
     TG_OFFENSIVE_API = os.environ.get("TG_OFFENSIVE_API", None)

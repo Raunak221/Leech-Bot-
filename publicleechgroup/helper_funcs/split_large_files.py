@@ -33,7 +33,7 @@ async def split_large_files(input_file):
     temp_dir = PurePath(tempfile.mkdtemp(dir=base_path.parent))
 
     file_type = magic.from_file(input_file, mime=True)
-    if file_type.startswith("video/"):
+    if Config.SPLIT_ALGORITHM.lower() != "rar" and file_type.startswith("video/"):
         # handle video / audio files here
         metadata = extractMetadata(createParser(input_file))
         duration = metadata.get("duration").seconds if metadata.has("duration") else 0
