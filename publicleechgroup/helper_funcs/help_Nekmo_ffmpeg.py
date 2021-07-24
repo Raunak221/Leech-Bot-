@@ -16,7 +16,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import time
-from pathlib import Path, PurePath
+from pathlib import PurePath
 
 from publicleechgroup.helper_funcs.run_shell_command import run_command
 
@@ -38,4 +38,4 @@ async def take_screen_shot(video_file, output_directory, ttl):
     await run_command(cmd_generate_thumbnail)
     # Wait for the subprocess to finish
     #
-    return str(output_file) if Path(output_file).exists() else None
+    return str(output_file)
