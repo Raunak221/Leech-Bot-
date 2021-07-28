@@ -22,11 +22,11 @@ import os
 from pyrogram.errors import FloodWait, MessageNotModified
 
 from publicleechgroup import LOGGER, Config
-from publicleechgroup.helper_funcs.create_compressed_archive import create_archive
 from publicleechgroup.helper_funcs.rclone_handler import (
     copy_via_rclone,
     get_r_clone_config,
 )
+from publicleechgroup.helper_funcs.split_archive_handler import create_archive
 from publicleechgroup.helper_funcs.upload_to_tg import upload_to_tg
 
 

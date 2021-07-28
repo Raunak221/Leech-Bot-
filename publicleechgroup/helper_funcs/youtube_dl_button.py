@@ -22,9 +22,9 @@ from datetime import datetime
 import yt_dlp
 
 from publicleechgroup import LOGGER, Config
-from publicleechgroup.helper_funcs.display_progress import time_formatter
 from publicleechgroup.helper_funcs.extract_link_from_message import extract_link
 from publicleechgroup.helper_funcs.upload_to_tg import upload_to_tg
+from publicleechgroup.helper_funcs.utils import time_formatter
 from publicleechgroup.helper_funcs.youtube_dl_extractor import yt_extract_info
 
 

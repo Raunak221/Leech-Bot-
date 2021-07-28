@@ -24,7 +24,7 @@ from pyrogram import Client
 from pyrogram.errors import ChannelInvalid
 
 from publicleechgroup import LOGGER
-from publicleechgroup.helper_funcs.run_shell_command import run_command
+from publicleechgroup.helper_funcs.utils import run_command
 
 
 async def copy_via_rclone(src: str, remote_name: str, remote_dir: str, conf_file: str):

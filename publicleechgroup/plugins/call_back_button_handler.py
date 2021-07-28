@@ -18,8 +18,8 @@
 from pyrogram.types import CallbackQuery
 
 from publicleechgroup import LOGGER, String
-from publicleechgroup.helper_funcs.icntaosrtsba import leech_btn_k, ytdl_btn_k
 from publicleechgroup.helper_funcs.youtube_dl_button import youtube_dl_call_back
+from publicleechgroup.plugins.icntaosrtsba import leech_btn_k, ytdl_btn_k
 
 
 async def button(bot, update: CallbackQuery):

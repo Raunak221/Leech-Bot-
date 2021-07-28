@@ -24,8 +24,8 @@ import time
 import traceback
 
 from publicleechgroup import BOT_START_TIME, LOGGER, Command, Config, String, aria2
-from publicleechgroup.helper_funcs.display_progress import humanbytes, time_formatter
 from publicleechgroup.helper_funcs.upload_to_tg import upload_to_tg
+from publicleechgroup.helper_funcs.utils import humanbytes, time_formatter
 
 
 async def status_message_f(_, message):
@@ -80,7 +80,7 @@ async def cancel_message_f(_, message):
             LOGGER(__name__).info(downloads.remove(force=True, files=True))
             await i_m_s_e_g.edit_text(String.TOR_CANCELLED)
         except Exception as e:
-            LOGGER(__name__).warn(str(e))
+            LOGGER(__name__).info(str(e))
             await i_m_s_e_g.edit_text(String.TOR_CANCEL_FAILED)
     else:
         await message.delete()

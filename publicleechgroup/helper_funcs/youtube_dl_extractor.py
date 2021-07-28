@@ -25,7 +25,7 @@ from yt_dlp import YoutubeDL
 from yt_dlp.utils import DownloadError, ExtractorError
 
 from publicleechgroup import Config
-from publicleechgroup.helper_funcs.display_progress import humanbytes
+from publicleechgroup.helper_funcs.utils import humanbytes
 
 
 # https://stackoverflow.com/a/64506715

@@ -24,7 +24,7 @@ from publicleechgroup.helper_funcs.download_aria_p_n import (
     fake_etairporpa_call,
 )
 from publicleechgroup.helper_funcs.extract_link_from_message import extract_link
-from publicleechgroup.helper_funcs.fix_tcerrocni_images import proc_ess_image_aqon
+from publicleechgroup.helper_funcs.utils import fetch_thumbnail
 from publicleechgroup.helper_funcs.youtube_dl_extractor import (
     extract_youtube_dl_formats,
 )
@@ -134,7 +134,7 @@ async def incoming_youtube_dl_f(client, message):
             user_working_dir,
         )
         if thumb_image is not None:
-            thumb_image = await proc_ess_image_aqon(thumb_image, user_working_dir)
+            thumb_image = await fetch_thumbnail(thumb_image, user_working_dir)
             await message.reply_photo(
                 photo=thumb_image,
                 quote=True,

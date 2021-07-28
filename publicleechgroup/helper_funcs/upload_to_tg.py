@@ -16,6 +16,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import asyncio
+import math
 import os
 import time
 from shutil import copyfile
@@ -24,15 +25,16 @@ import magic
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 from PIL import Image
+from pyrogram.errors import FloodWait
 from pyrogram.types import InputMediaAudio, InputMediaDocument, InputMediaVideo
 
 from publicleechgroup import LOGGER, Config
-from publicleechgroup.helper_funcs.display_progress import (
+from publicleechgroup.helper_funcs.split_archive_handler import split_large_files
+from publicleechgroup.helper_funcs.utils import (
     humanbytes,
-    progress_for_pyrogram,
+    take_screen_shot,
+    time_formatter,
 )
-from publicleechgroup.helper_funcs.help_Nekmo_ffmpeg import take_screen_shot
-from publicleechgroup.helper_funcs.split_large_files import split_large_files
 
 
 async def copy_file(input_file, output_dir):
@@ -320,3 +322,41 @@ async def upload_single_file(
         await message_for_progress_display.delete()
     os.remove(local_file_path)
     return sent_message
+
+
+async def progress_for_pyrogram(current, total, filename, message, start):
+    now = time.time()
+    diff = now - start
+    if round(diff % 10.00) == 0 or current == total:
+        percentage = current * 100 / total
+        elapsed_time = round(diff)
+        if elapsed_time == 0:
+            return
+        speed = current / elapsed_time
+        time_to_completion = round((total - current) / speed)
+        estimated_total_time = time_formatter(time_to_completion)
+
+        progress_block = "[{}{}]\n".format(
+            "".join(
+                Config.FINISHED_PROGRESS_STR for _ in range(math.floor(percentage / 5))
+            ),
+            "".join(
+                Config.UN_FINISHED_PROGRESS_STR
+                for _ in range(20 - math.floor(percentage / 5))
+            ),
+        )
+
+        progress_text = (
+            f"Filename: <i>{filename}</i>\n"
+            f"{progress_block}"
+            f"Uploading {round(percentage, 2)}% of "
+            f"{humanbytes(total)} @ {humanbytes(speed)}/s, "
+            f"ETA: {estimated_total_time}\n"
+        )
+        try:
+            if not message.photo:
+                await message.edit_text(text=progress_text)
+            else:
+                await message.edit_caption(caption=progress_text)
+        except FloodWait as e:
+            await asyncio.sleep(e.x)
