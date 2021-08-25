@@ -1,6 +1,7 @@
-#!/bin/bash
 
-aria2c \
-	--enable-rpc \
-	--conf-path=/app/publicleechgroup/aria2/aria2.conf &
-python3 -m publicleechgroup
+if [[ -n $RCLONE_CONFIG ]]; then
+ echo "Rclone config detected"
+ echo -e "$RCLONE_CONFIG" > /app/rclone.conf
+fi
+chmod +x extract
+python3 -m tobrot
